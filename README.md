@@ -8,7 +8,7 @@ The simulation is implemented in Fortran 77. The spatiotemporally correlated col
 
 ****Included Codes****
 
-(i)  snapshot.f  -   Generates snapshots of the evolving field for use in producing figures and animation sequences for the manuscript.
+(i)  snapshot_code.f  -   Generates snapshots of the evolving field for use in producing figures and animation sequences for the manuscript.
 
-(ii) correlation.f - Computes the two-point correlation function and the structure factor using the hardened variable and Fast Fourier Transform (FFT) methods.
+(ii) correlation_code.f - Computes the two-point correlation function and the structure factor using the hardened variable and Fast Fourier Transform (FFT) methods.
 
