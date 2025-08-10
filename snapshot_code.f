@@ -1,52 +1,41 @@
-c  this program simulates phase ordering in the 2-d nematic model.
-      character*8 name2(5000)
+c  this program simulates modelB with color noise
+
+        character*8 name2(5000)
 	parameter(k=512,k2=k**2,khalf=k/2,n=2)
 
         real x(k,k,2),af(n,k,k),xn(n,k,k,n),b(k,k),cur(2,k,k)
 
         
 	integer m(k),p(k)
-        real data(8388608),datc(8388608)
-	
 	integer nn(2)
-	real s(-khalf:khalf-1,-khalf:khalf-1),scatt(100000,0:2000)
-	real c(-khalf:khalf-1,-khalf:khalf-1),corr(100000,0:2000)
-
-!        open(unit=95,file='eta1.inp')
-!        read(95,*) eta1    
-     
-	dt=0.001
-	dx=1.0
+	   
+	dt=0.005		! time step
+	dx=1.0			! grid size
 	dx2=2*dx
-	dxx=dx**2
-	par=dt/dx**2
-        phia=0.11
+	dxx=dx**2		
+	par=dt/dx**2		! stability check
+       
         af0 = 0.0
 
 cccccccccccccccc==============================
-      
-c       anisotropic diffusion coeff
+        at= 1.0		! tau in color noise
 
-c       non-eqm coupling coeff
-         at= 1.0
+        alam=7.0		! lambda in color noise
+        diff=1.0		! diffusivity
+        bf = sqrt(10.0)	! strength of color noise
 
-        alam=7.0
-c        alam= phia*65
-        diff=1.0
-        bf = sqrt(10.0)
-
-        frho=1.0
-        rave=-0.7
+        frho=1.0		! noise strength
+        rave=-0.7		! mean density of passive
 
         ad=0.0
 
-	nens=1
+	nens=1			! number of realization
 	frac=0.5
 	drun=1.0
 
         
 
-        ntime=60000
+        ntime=60000		! total simulation time
         ist = 1
 	nspa= 100
 	nscatt=5000
@@ -63,27 +52,21 @@ c        alam= phia*65
 	pi=2*asin(1.0)
 	nn(1)=k
 	nn(2)=k
-        open(111, file='fnameapol')
+        open(111, file='fnameapol')		! storing outputs
         read(111,*)(name2(i),i=1,5000)
-c        open(112, file='fnamerhol')
-c        read(112,*)(name2(i),i=1,900)
+
 
 
 c   here, we initialize the neighbour table
 
         do i=1,k
-          p(i)=i+1
-          if(i.eq.k)p(i)=1
-          m(i)=i-1
-          if(i.eq.1)m(i)=k
+        p(i)=i+1
+        if(i.eq.k)p(i)=1
+        m(i)=i-1
+        if(i.eq.1)m(i)=k
         enddo
-	
-c  here, we start the iteration process
-
-
-	
-    
-c  here, we set the initial conditions for Q
+	    
+c  here, we set the initial conditions for phi
 
 
         sub=0.0
@@ -125,33 +108,38 @@ c  here, we start the iteration process
 
         do itime=1,ntime
 
-         do ic=1,n
+        do ic=1,n
         do j=1,k
         do i=1,k
 
-           af(ic,i,j)= bf*gasdev(iseed)
+        af(ic,i,j)= bf*gasdev(iseed)
 
-           enddo
-           enddo
-           enddo
+        enddo
+        enddo
+        enddo
  
         do j=1,k
         do i=1,k
+         
+        ! Terms in modelB
          
         px=(x(p(i),j,iold)-2*x(i,j,iold)+x(m(i),j,iold))/dxx
         py=(x(i,p(j),iold)-2*x(i,j,iold)+x(i,m(j),iold))/dxx
 
         rho=(px+py)  
 
-                    
+	! Chemical potential
+	                    
         b(i,j)=-rho+(x(i,j,iold)**3-x(i,j,iold))
         
         axx=(xn(1,p(i),j,iold)+xn(1,m(i),j,iold)-2*xn(1,i,j,iold))/dxx
-       ayy=(xn(1,i,p(j),iold)+xn(1,i,m(j),iold)-2*xn(1,i,j,iold))/dxx
+        ayy=(xn(1,i,p(j),iold)+xn(1,i,m(j),iold)-2*xn(1,i,j,iold))/dxx
 
-       bxx=(xn(2,p(i),j,iold)+xn(2,m(i),j,iold)-2*xn(2,i,j,iold))/dxx
-       byy=(xn(2,i,p(j),iold)+xn(2,i,m(j),iold)-2*xn(2,i,j,iold))/dxx
+        bxx=(xn(2,p(i),j,iold)+xn(2,m(i),j,iold)-2*xn(2,i,j,iold))/dxx
+        byy=(xn(2,i,p(j),iold)+xn(2,i,m(j),iold)-2*xn(2,i,j,iold))/dxx
 
+	! Update equation for color noise
+	
         xn(1,i,j,inew)= xn(1,i,j,iold)
      1   - (at**(-1))*(xn(1,i,j,iold)
      1   -(alam**2)*(axx+ayy))*dt
@@ -192,10 +180,11 @@ cc......calculating current
     
         add1=rhoxx+rhoyy
 
+! Update equation for phi
+
         x(i,j,inew)=x(i,j,iold)+dt*add1*diff
      1              +frho*(afxx+afyy)*sqrt(dt*2*diff)
 
-  
         sums=sums+x(i,j,inew)     
 
 	enddo
@@ -210,30 +199,25 @@ cCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 	if(itime > ist)then
 	if (mod(itime,20).eq.0)then
-       write(*,*)itime,sums,iens,alam,at,diff
-c	isee=itime/nspa
-c        write(*,*)itime,iens,sumden,sumxmod
-       write(53,*)itime,sumxmod
-c        if(iens.eq.1) then
-
-       npro=npro+1
+        write(*,*)itime,sums,iens,alam,at,diff
+        write(53,*)itime,sumxmod
+	
+	! storing output
+	
+        npro=npro+1
         open(300,file =name2(npro))
 
-c        open(200, file =name1(npro))
         do j=1,k
         do i=1,k
         
         write(300,*)i,j,x(i,j,inew)
-c        endif
+
         enddo
         write(300,*)""
         enddo
         endif
 	endif
 
-c	enddo
-	
-c	endif
 
 c   here, we rewrite the new configuration into the old one
 
@@ -249,86 +233,7 @@ c  here, the loop on the time ends
 	end
 
 c***********************************************************
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-      SUBROUTINE fourn(data,nn,ndim,isign)
-      INTEGER isign,ndim,nn(ndim)
-      real data(8388608)
-      INTEGER i1,i2,i2rev,i3,i3rev,ibit,idim,ifp1,ifp2,ip1,ip2,ip3,k1,
-     *k2,n,nprev,nrem,ntot
-      REAL tempi,tempr
-      DOUBLE PRECISION theta,wi,wpi,wpr,wr,wtemp
-      ntot=1
-      do 11 idim=1,ndim
-        ntot=ntot*nn(idim)
-11    continue
-      nprev=1
-      do 18 idim=1,ndim
-        n=nn(idim)
-        nrem=ntot/(n*nprev)
-        ip1=2*nprev
-        ip2=ip1*n
-        ip3=ip2*nrem
-        i2rev=1
-        do 14 i2=1,ip2,ip1
-          if(i2.lt.i2rev)then
-            do 13 i1=i2,i2+ip1-2,2
-              do 12 i3=i1,ip3,ip2
-                i3rev=i2rev+i3-i2
-                tempr=data(i3)
-                tempi=data(i3+1)
-                data(i3)=data(i3rev)
-                data(i3+1)=data(i3rev+1)
-                data(i3rev)=tempr
-                data(i3rev+1)=tempi
-12            continue
-13          continue
-          endif
-          ibit=ip2/2
-1         if ((ibit.ge.ip1).and.(i2rev.gt.ibit)) then
-            i2rev=i2rev-ibit
-            ibit=ibit/2
-          goto 1
-          endif
-          i2rev=i2rev+ibit
-14      continue
-        ifp1=ip1
-2       if(ifp1.lt.ip2)then
-          ifp2=2*ifp1
-          theta=isign*6.28318530717959d0/(ifp2/ip1)
-          wpr=-2.d0*sin(0.5d0*theta)**2
-          wpi=sin(theta)
-          wr=1.d0
-          wi=0.d0
-          do 17 i3=1,ifp1,ip1
-            do 16 i1=i3,i3+ip1-2,2
-              do 15 i2=i1,ip3,ifp2
-                k1=i2
-                k2=k1+ifp1
-                tempr=sngl(wr)*data(k2)-sngl(wi)*data(k2+1)
-                tempi=sngl(wr)*data(k2+1)+sngl(wi)*data(k2)
-                data(k2)=data(k1)-tempr
-                data(k2+1)=data(k1+1)-tempi
-                data(k1)=data(k1)+tempr
-                data(k1+1)=data(k1+1)+tempi
-15            continue
-16          continue
-            wtemp=wr
-            wr=wr*wpr-wi*wpi+wr
-            wi=wi*wpr+wtemp*wpi+wi
-17        continue
-          ifp1=ifp2
-        goto 2
-        endif
-        nprev=n*nprev
-18    continue
-      return
-      END
+! subroutine for random number generation
 
 c***********************************************************
         FUNCTION ran2(idum)
