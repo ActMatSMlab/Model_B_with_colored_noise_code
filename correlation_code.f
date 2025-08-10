@@ -1,5 +1,5 @@
-c  this program simulates phase ordering in the 2-d nematic model.
-      character*8 name1(901),name2(901),name3(900),name5(900),name4(900)
+c  this program simulates modelb with color noise
+
 	parameter(k=2048,k2=k**2,khalf=k/2,n=2)
 
         real x(k,k,2),af(n,k,k),xn(n,k,k,n),b(k,k)
@@ -10,43 +10,34 @@ c  this program simulates phase ordering in the 2-d nematic model.
 	
 	integer nn(2)
 	real s(-khalf:khalf-1,-khalf:khalf-1),scatt(100000,0:2000)
-	real c(-khalf:khalf-1,-khalf:khalf-1),corr(100000,0:2000)
-
-!        open(unit=95,file='eta1.inp')
-!        read(95,*) eta1    
+	real c(-khalf:khalf-1,-khalf:khalf-1),corr(100000,0:2000)  
      
-	dt=0.005
-	dx=1.0
+	dt=0.005	!time step
+	dx=1.0		!grid size
 	dx2=2*dx
 	dxx=dx**2
-	par=dt/dx**2
+	par=dt/dx**2	!stability check
         phia=0.11
         af0 = 0.0
 
 cccccccccccccccc==============================
-      
-c       anisotropic diffusion coeff
+        at= 1.0 	         !tau in color noise
+        alam=7.0	         ! lambda in color noise
+        diff=1.0	         ! diffusivity
+        bf = sqrt(10.0)	 ! strength of color noise
 
-c       non-eqm coupling coeff
-         at= 1.0
-
-        alam=7.0
-c        alam= phia*65
-        diff=1.0
-        bf = sqrt(10.0)
-
-        frho=1.0
-        rave=-0.8
+        frho=1.0		 ! noise strength
+        rave=-0.8	         ! mean density of passive		
 
         ad=0.0
 
-	nens=25
+	nens=25		 ! number of realization
 	frac=0.5
 	drun=1.0
 
         
 
-        ntime=8000
+        ntime=8000		! simulation time
 	nspa=10
 	nscatt=400
 
@@ -62,15 +53,11 @@ c        alam= phia*65
 	pi=2*asin(1.0)
 	nn(1)=k
 	nn(2)=k
-c        open(111, file='fnamerholp')
-c        read(111,*)(name1(i),i=1,900)
-c        open(112, file='fnamerhol')
-c        read(112,*)(name2(i),i=1,900)
 
-	open(unit=1,file='lens.dat',status='unknown')
-	open(unit=2,file='lenc.dat',status='unknown')
+	open(unit=1,file='lens.dat',status='unknown')		! file for length from structure factor
+	open(unit=2,file='lenc.dat',status='unknown')		! file for length from correlatio function
 
-        open(unit=11,file='sf.1',status='unknown')
+        open(unit=11,file='sf.1',status='unknown')		! files for storing structure factor
         open(unit=12,file='sf.2',status='unknown')
         open(unit=13,file='sf.3',status='unknown')
         open(unit=14,file='sf.4',status='unknown')
@@ -92,7 +79,7 @@ c        read(112,*)(name2(i),i=1,900)
         open(unit=30,file='sf.20',status='unknown')
         ns=10
 
-        open(unit=31,file='cf.1',status='unknown')
+        open(unit=31,file='cf.1',status='unknown')		! files for storing correlation function
         open(unit=32,file='cf.2',status='unknown')
         open(unit=33,file='cf.3',status='unknown')
         open(unit=34,file='cf.4',status='unknown')
@@ -129,10 +116,10 @@ c   the correlation function to zero
 c   here, we initialize the neighbour table
 
         do i=1,k
-          p(i)=i+1
-          if(i.eq.k)p(i)=1
-          m(i)=i-1
-          if(i.eq.1)m(i)=k
+        p(i)=i+1
+        if(i.eq.k)p(i)=1
+        m(i)=i-1
+        if(i.eq.1)m(i)=k
         enddo
 	
 c  here, we start the iteration process
@@ -140,7 +127,7 @@ c  here, we start the iteration process
 
 	do iens=1,nens
     
-c  here, we set the initial conditions for Q
+c  here, we set the initial conditions for phi
 
 
         sub=0.0
@@ -153,7 +140,7 @@ c  here, we set the initial conditions for Q
         enddo
 
         sub=sub/k2
-       sumden=0.0
+        sumden=0.0
         do j=1,k
         do i=1,k
         x(i,j,1)=x(i,j,1)-sub
@@ -165,7 +152,7 @@ c  here, we set the initial conditions for Q
         ! sp_temp noise initialization
 
         do ic =1,n
-          do j=1,k
+        do j=1,k
         do i=1,k
 
         xn(ic,i,j,1) = 0.2*(0.5-ran2(iseed))
@@ -182,33 +169,38 @@ c  here, we start the iteration process
 
         do itime=1,ntime
 
-         do ic=1,n
+        do ic=1,n
         do j=1,k
         do i=1,k
 
-           af(ic,i,j)= bf*gasdev(iseed)
+        af(ic,i,j)= bf*gasdev(iseed)		!Gaussian white noise
 
-           enddo
-           enddo
-           enddo
+        enddo
+        enddo
+        enddo
  
         do j=1,k
         do i=1,k
-         
+        
+        ! terms in ModelB 
+        
         px=(x(p(i),j,iold)-2*x(i,j,iold)+x(m(i),j,iold))/dxx
         py=(x(i,p(j),iold)-2*x(i,j,iold)+x(i,m(j),iold))/dxx
 
         rho=(px+py)  
 
+        ! chemical potential
                     
         b(i,j)=-rho+(x(i,j,iold)**3-x(i,j,iold))
         
         axx=(xn(1,p(i),j,iold)+xn(1,m(i),j,iold)-2*xn(1,i,j,iold))/dxx
-       ayy=(xn(1,i,p(j),iold)+xn(1,i,m(j),iold)-2*xn(1,i,j,iold))/dxx
+        ayy=(xn(1,i,p(j),iold)+xn(1,i,m(j),iold)-2*xn(1,i,j,iold))/dxx
 
-       bxx=(xn(2,p(i),j,iold)+xn(2,m(i),j,iold)-2*xn(2,i,j,iold))/dxx
-       byy=(xn(2,i,p(j),iold)+xn(2,i,m(j),iold)-2*xn(2,i,j,iold))/dxx
-
+        bxx=(xn(2,p(i),j,iold)+xn(2,m(i),j,iold)-2*xn(2,i,j,iold))/dxx
+        byy=(xn(2,i,p(j),iold)+xn(2,i,m(j),iold)-2*xn(2,i,j,iold))/dxx
+        
+	! Update equation for color noise
+	
         xn(1,i,j,inew)= xn(1,i,j,iold)
      1   - (at**(-1))*(xn(1,i,j,iold)
      1   -(alam**2)*(axx+ayy))*dt
@@ -234,7 +226,9 @@ c  here, we start the iteration process
         rhoyy=(b(i,p(j))-2*b(i,j)+b(i,m(j)))/dxx     
     
         add1=rhoxx+rhoyy
-
+	
+	! Update equation for phi (Model B + color noise)
+	
         x(i,j,inew)=x(i,j,iold)+dt*add1*diff
      1              +frho*(afxx+afyy)*sqrt(dt*2*diff)
 
@@ -244,14 +238,6 @@ c  here, we start the iteration process
 	enddo
 	enddo
                 
-cCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-c        sums=0.0
-c        do j=1,k
-c        do i=1,k
-
-c        sums=sums+x(i,j,inew)
-c        enddo
-c        enddo
         sums=sums/k2
 
         sumxmod=sums
@@ -260,36 +246,12 @@ cCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 c   here, we calculate the contribution to the scattering function
 c   and the correlation function
-c        write(501,*)itime,iens,sumrho,sumdensin,sumxmod,nout
+
         if((itime/nspa)*nspa.eq.itime)then
 
-c       write(*,*)itime,sums,iens,alam,at,diff
 	isee=itime/nspa
-c        write(*,*)itime,iens,sumden,sumxmod
+
         write(53,*)itime,iens,sumden,sumxmod
-c        if(iens.eq.1) then
-
-c        npro=npro+1
-c        open(300,file =name2(npro))
-c        open(200, file =name1(npro))
-c        do j=1,k
-c        do i=1,k
-c        if(x(i,j,inew).gt.rave)then
-c        write(200,*)i,j,x(i,j,inew)
-c        endif
-c        enddo
-c        write(200,*)""
-c        enddo
-
-c        do j=1,k
-c        do i=1,k
-c        if(xn(2,i,j,inew).gt.0.0)then
-c        write(300,*)i,j,xn(2,i,j,inew)
-c        endif
-c        enddo
-c        write(300,*)""
-c        enddo
-c        endif
 
 c  here, we calculate the statistical properties of the fields
 	
@@ -304,30 +266,15 @@ c  here, we calculate the statistical properties of the fields
 	datc(i)=0.0
 	enddo
 	
-c  structure factor for Q
+c  structure factor for phi
 
 	sum=0.0
-c	do ic=1,n
-
-
-c        write(*,*)xx(1,i,j),xx(2,i,j),"xx"
 	l=1
 	do j=1,k
 	do i=1,k
 
-c        if(ic.eq.1) xx(1,i,j)=ar(i,j,inew)
-c        if(ic.eq.2) xx(2,i,j)=br(i,j,inew)
-!        adel=x(i,j,inew)-sumxmod
-c	data(l)=sign(1.0,adel)
-!        if(adel.gt.0)then
-!         data(l)=+1
-!        else
-!         data(l)=-1
-!        end if
-c        write(*,*) data(l)
-
-	data(l)=(x(i,j,inew)-sumxmod)
-!	data(l)=(x(i,j,inew)-sumxmod)/abs(x(i,j,inew)-sumxmod)
+	adel=x(i,j,inew)-sumxmod
+	data(l)=sign(1.0,adel)		! hardening data
 	data(l+1)=0.0
 	l=l+2
 	enddo
@@ -369,7 +316,7 @@ c        write(*,*) data(l)
 	enddo
 	sum=sum/k2
 
-c  correlation function for Q
+c  correlation function for phi
 
 	call fourn(datc,nn,2,-1)
 
@@ -520,8 +467,7 @@ c  scaled structure factors and correlation functions for Q
 	endif
         write(ns,*)run,scatt(isee,i)
         write(nc,*)dist,corr(isee,i)/corr(isee,0)
-c	write(ns,*)run/r,scatt(isee,i)*r**2
-cic	write(nc,*)dist/x0,corr(isee,i)/corr(isee,0)
+
 	enddo
 	endif
 
@@ -539,7 +485,7 @@ c***********************************************************
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+! Subroutine for FFT
 
       SUBROUTINE fourn(data,nn,ndim,isign)
       INTEGER isign,ndim,nn(ndim)
@@ -616,6 +562,8 @@ c***********************************************************
       END
 
 c***********************************************************
+! Subroutine for random number genereation
+
         FUNCTION ran2(idum)
        INTEGER idum,IM1,IM2,IMM1,IA1,IA2,IQ1,IQ2,IR1,IR2,NTAB,NDIV
        REAL ran2,AM,EPS,RNMX
@@ -652,8 +600,9 @@ c***********************************************************
        END
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Subroutine for random number generation
 
-          FUNCTION gasdev(idum)
+        FUNCTION gasdev(idum)
         INTEGER idum
         REAL gasdev
 C USES ran1
