@@ -9,7 +9,7 @@ The simulation is implemented in Fortran 77. The spatiotemporally correlated col
 
 
 
-****Included Codes****
+****###---Included Codes : -****
 
 (i)  snapshot_code.f -  Generates snapshots of the evolving φ-field for use in producing figures and animation movies for the manuscript. 
 
@@ -18,6 +18,6 @@ The simulation is implemented in Fortran 77. The spatiotemporally correlated col
 
 
 
-****Included Simulation Data****
+****###---Included Simulation Data : -****
  
  simulation_data.zip - Contains the data required to reproduce all figures from the simulation in the accompanying paper.
