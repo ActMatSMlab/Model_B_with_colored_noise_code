@@ -1,5 +1,6 @@
 # Model_B_with_colored_noise_code
-This repository contains the source code used to simulate the system described by Model B with colored noise, as presented in the accompanying paper.
+This repository contains the source code used to simulate the system described by Model B with colored noise, along with the data presented in the accompanying paper.
+
 In this work, we model the effects of active particles on passive colloidal particles in an active–passive mixture. The influence of the active particles on the passive ones is represented as a spatiotemporally correlated colored noise. 
 
 The theoretical background for generating the spatiotemporally correlated colored noise is described in : https://journals.aps.org/pra/abstract/10.1103/PhysRevA.46.4670
@@ -12,3 +13,7 @@ The simulation is implemented in Fortran 77. The spatiotemporally correlated col
 
 (ii) correlation_code.f - Computes the two-point correlation function and the structure factor of the φ-field using the hardened variable and Fast Fourier Transform (FFT) methods.
 
+
+****Included Simulation Data****
+ 
+ simulation_data.zip - Contains the data required to reproduce all figures from the simulation in the accompanying paper.
