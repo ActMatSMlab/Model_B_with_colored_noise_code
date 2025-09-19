@@ -48,7 +48,7 @@ The data can be plotted using Xmgrace, Gnuplot, python, matlab or any other plot
 
 ****###---Included Simulation Data : -****
  
-Manuscript_data.zip - Contains the data required to reproduce all figures from the simulation in the accompanying paper.
+Manuscript_data.zip - Contains the data required to reproduce all figures in the accompanying paper.
 
 
 
