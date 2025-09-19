@@ -7,7 +7,6 @@ c  this program simulates modelB with color noise
 
         
 	integer m(k),p(k)
-	integer nn(2)
 	   
 	dt=0.005		! time step
 	dx=1.0			! grid size
@@ -27,31 +26,18 @@ cccccccccccccccc==============================
         frho=1.0		! noise strength
         rave=-0.7		! mean density of passive
 
-        ad=0.0
-
-	nens=1			! number of realization
-	frac=0.5
-	drun=1.0
-
         
 
         ntime=60000		! total simulation time
         ist = 1
-	nspa= 100
-	nscatt=5000
 
 
         npro=1
 
 	iseed=-123495 
 
-	kcut=khalf*frac
-	runmax=sqrt(2.0)*kcut
-	kmax=runmax
-	nout=runmax/drun
 	pi=2*asin(1.0)
-	nn(1)=k
-	nn(2)=k
+
         open(111, file='fnameapol')		! storing outputs
         read(111,*)(name2(i),i=1,5000)
 
