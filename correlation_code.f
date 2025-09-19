@@ -17,9 +17,7 @@ c  this program simulates modelb with color noise
 	dx2=2*dx
 	dxx=dx**2
 	par=dt/dx**2	!stability check
-        phia=0.11
-        af0 = 0.0
-
+ 
 cccccccccccccccc==============================
         at= 1.0 	         !tau in color noise
         alam=7.0	         ! lambda in color noise
@@ -29,20 +27,14 @@ cccccccccccccccc==============================
         frho=1.0		 ! noise strength
         rave=-0.8	         ! mean density of passive		
 
-        ad=0.0
 
 	nens=25		 ! number of realization
 	frac=0.5
 	drun=1.0
 
-        
-
-        ntime=8000		! simulation time
+    ntime=8000		! simulation time
 	nspa=10
 	nscatt=400
-
-
-        npro=0
 
 	iseed=-123497 
 
@@ -251,7 +243,7 @@ c   and the correlation function
 
 	isee=itime/nspa
 
-        write(53,*)itime,iens,sumden,sumxmod
+c        write(53,*)itime,iens,sumden,sumxmod
 
 c  here, we calculate the statistical properties of the fields
 	
