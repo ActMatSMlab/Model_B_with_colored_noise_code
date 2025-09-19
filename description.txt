@@ -1,0 +1,1 @@
+All the details for generating the data presented in the manscript and name of the files genearted for different observables are described in the 'Readme' file.
