@@ -11,9 +11,10 @@ The simulation is implemented in Fortran 77. The spatiotemporally correlated col
 
 ****###---Included Codes : -****
 
-(i)  snapshot_code.f -  Generates snapshots of the evolving φ-field for use in producing figures and animation movies for the manuscript. 
+(i)  snapshot_code.f -  Generates snapshots of the evolving φ-field for use in producing figures and animation movies for the manuscript. In this particular code, the parameters are set to correalation length alam=7 and time at=1 for the colored noise. These parameters can be varied to generate all the data included in the manuscript.
 
-(ii) correlation_code.f - Computes the two-point correlation function and the structure factor of the φ-field using the hardened variable and Fast Fourier Transform (FFT) methods.
+(ii) correlation_code.f - Computes the two-point correlation function and the structure factor of the φ-field using the hardened variable and Fast Fourier Transform (FFT) methods. In this particular code, the parameters are set to correalation length alam=7 and time at=1 for the colored noise. These parameters can be varied to generate all the data included in the manuscript.
+
 
 
 
