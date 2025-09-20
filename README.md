@@ -3,9 +3,6 @@ This repository contains the source code used to simulate the system described b
 
 In this work, we model the effects of active particles on passive colloidal particles in an active–passive mixture. The influence of the active particles on the passive ones is represented as a spatiotemporally correlated colored noise. 
 
-The preprint can be found at 
-https://doi.org/10.48550/arXiv.2508.11000
-
 
 The theoretical background for generating the spatiotemporally correlated colored noise is described in : https://journals.aps.org/pra/abstract/10.1103/PhysRevA.46.4670
 
