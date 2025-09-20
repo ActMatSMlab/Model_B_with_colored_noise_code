@@ -46,10 +46,6 @@ lenc.dat : stores length from correlation function with time
 
 The data can be plotted using Xmgrace, Gnuplot, python, matlab or any other plotting software
 
-****###---Included Simulation Data : -****
- 
-Manuscript_data.zip - Contains the data required to reproduce all figures in the accompanying paper.
-
 
 
  
